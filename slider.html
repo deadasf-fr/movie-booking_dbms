@@ -137,23 +137,76 @@
         margin: 0;
       }
       
-      .signInBtn{
-        font-family: 'Arial', sans-serif; /* Using Arial font */
-        font-weight: bold; /* For bold text */
-        font-size: 1rem; /* Adjust size as needed */
-         /* Red background similar to the image */
-        color: none; /* White text */
-        padding: 0.75rem 1.5rem; /* Padding for size */
-        border: none; /* No border */
-        border-radius: 8px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor on hover */
-        transition: background-color 0.3s ease, transform 0.3s ease;
-        top:20px;
+      .InBtn {
+        padding: 10px 20px;
+        background-color: black;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 2px;
+        top: -5px;
       }
 
       .signInBtn:hover {
-        background-color:  white/* Darker red on hover */
-        transform: scale(1.05); /* Slight zoom effect on hover */
+        background-color: white;
+        color:rgb(35, 35, 69);
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+      }
+
+      .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 300px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .close {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 25px;
+        cursor: pointer;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+      }
+
+      form button {
+        padding: 10px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      }sign
+
+      form button:hover {
+        background-color: #218838;
       }
       /* Movie listing section */
       .movie-section {
@@ -268,6 +321,24 @@
   }
 }
 
+.movie-link {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Inherit the color from the parent */
+}
+
+.movie-card h3, .movie-card p {
+  color: white; /* Or any color that matches your other cards */
+  font-family: inherit; /* Ensure the font family is the same */
+}
+
+.movie-card {
+  cursor: pointer;
+  text-align: center;
+  background-color: #1c1c1c; /* Adjust to match the background of other cards */
+  padding: 10px;
+  border-radius: 5px;
+}
+
 
 /* Adjust for mobile */
 @media (max-width: 768px) {
@@ -318,8 +389,27 @@
           <li><a href="#">Home</a></li>
           <li><a href="#">Schedule</a></li>
           <li><a href="#">Movie</a></li>
-          <li><button id="signInBtn">Sign In</div></li>
+          <li><button class="signInBtn">Sign-In</button></li>
         </ul>
+      </div>
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Login / Register</h2>
+          <form id="loginForm">
+            <div>
+              <label for="username">Username:</label>
+              <input type="text" id="username" name="username" required>
+            </div>
+            <div>
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" required>
+            </div>
+            <div>
+              <button type="submit" class="btn">Submit</button>
+            </div>
+          </form>
+        </div>
       </div>
       <div class="text-overlay">
         <h1>Imagix</h1>
@@ -344,12 +434,16 @@
           <h3>Venom</h3>
           <p>120 min | Action</p>
         </div>
-        <div class="movie-card">
-          <img src="dunkirk_mcard.jpeg" alt="Dunkirk Movie">
-          <h3>Dunkirk</h3>
-          <p>118 min | Action, Drama</p>
-        </div>
-        <div class="movie-card">
+        <a href="final.html" class="movie-link">
+          <div class="movie-card">
+            <img src="dunkirk_mcard.jpeg" alt="Dunkirk Movie">
+            <h3>Dunkirk</h3>
+            <p>118 min | Action, Drama</p>
+          </div>
+        </a>
+        
+        
+        <div class="movie-card" >
           <img src="svsb_mcard.jpeg" alt="Batman vs Superman">
           <h3>Batman vs Superman</h3>
           <p>125 min | Action</p>
@@ -394,49 +488,35 @@
       </div>
     </section>
     <script>
-          // JavaScript to control popup
-    const signInBtn = document.getElementById('signInBtn');
-    const signInPopup = document.getElementById('signInPopup');
-    const closePopupBtn = document.getElementById('closePopupBtn');
+      const modal = document.getElementById("modal");
+      const signInBtn = document.querySelector(".signInBtn");
+      const closeBtn = document.querySelector(".close");
 
-    signInBtn.addEventListener('click', () => {
-      signInPopup.classList.add('active');
-    });
+      // Open modal when clicking the "Sign-In" button
+      signInBtn.onclick = function() {
+        modal.style.display = "block";
+      };
 
-    closePopupBtn.addEventListener('click', () => {
-      signInPopup.classList.remove('active');
-    });
+      // Close modal when clicking the "x" button
+      closeBtn.onclick = function() {
+        modal.style.display = "none";
+      };
 
-    // Form submission logic
-    const authForm = document.getElementById('authForm');
-    authForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const name = document.getElementById('name').value;
-      const rollNo = document.getElementById('rollNo').value;
-
-      // Send the data to the server using fetch API
-      try {
-        const response = await fetch('http://localhost:5000/add-student', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ name, rollNo }),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          alert(data.message);
-          signInPopup.classList.remove('active'); // Close popup after successful submission
-        } else {
-          alert('Error: ' + data.error);
+      // Close modal if clicking outside of the modal content
+      window.onclick = function(event) {
+        if (event.target === modal) {
+          modal.style.display = "none";
         }
-      } catch (err) {
-        console.error('Error:', err);
-        alert('Something went wrong, please try again later.');
-      }
-    });
+      };
+
+      // Form submit handler to simulate redirection
+      const loginForm = document.getElementById("loginForm");
+
+      loginForm.onsubmit = function(event) {
+        event.preventDefault(); // Prevent form submission for now
+        alert("Redirecting to the main page...");
+        window.location.href = "slider.html"; // Simulate redirection to the main page
+      };
     </script>
   </body>
 </html>
