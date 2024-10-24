@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cinema Seat Booking</title>
+  <style>
+    * {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+h2, p {
+  margin-bottom: 10px;
+}
+
+.seating-area {
+  margin-top: 30px;
+}
+
+.category {
+  margin-bottom: 30px;
+}
+
+h3 {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.seat {
+  width: 30px;
+  height: 30px;
+  margin: 5px;
+  background-color: #28a745; /* Available seats - green */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.seat.occupied {
+  background-color: #ffc107; /* Occupied seats - yellow */
+  cursor: not-allowed;
+}
+
+.seat.selected {
+  background-color: #dc3545; /* Selected seats - red */
+}
+
+.total {
+  font-size: 1.5rem;
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Venom: The Last Dance</h2>
+  <p>INOX: R-City, Ghatkopar | Today 24 Oct, 11:55 PM</p>
+
+  <div class="seating-area">
+    <div class="category">
+      <h3>Rs. 620 Royal</h3>
+      <div class="row" id="row-A">
+        <span class="seat available" data-price="620" data-seat="A1"></span>
+        <span class="seat available" data-price="620" data-seat="A2"></span>
+        <span class="seat occupied" data-price="620" data-seat="A3"></span>
+        <!-- More seats can be added similarly -->
+      </div>
+      <div class="row" id="row-B">
+        <span class="seat available" data-price="620" data-seat="B1"></span>
+        <span class="seat occupied" data-price="620" data-seat="B2"></span>
+        <!-- More seats -->
+      </div>
+    </div>
+
+    <div class="category">
+      <h3>Rs. 610 Club</h3>
+      <div class="row" id="row-H">
+        <span class="seat available" data-price="610" data-seat="H1"></span>
+        <span class="seat occupied" data-price="610" data-seat="H2"></span>
+        <!-- More seats -->
+      </div>
+      <div class="row" id="row-I">
+        <span class="seat available" data-price="610" data-seat="I1"></span>
+        <!-- More seats -->
+      </div>
+    </div>
+    
+    <div class="category">
+      <h3>Rs. 580 Executive</h3>
+      <div class="row" id="row-M">
+        <span class="seat available" data-price="580" data-seat="M1"></span>
+        <!-- More seats -->
+      </div>
+    </div>
+
+    <div class="total">
+      <p>Total: Rs. <span id="total">0</span></p>
+    </div>
+
+    <button id="payBtn">Pay Rs.0</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

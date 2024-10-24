@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway - IMAGIX CINEMA</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .back-button {
+            background: transparent;
+            border: none;
+            color: #9CA3AF;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .back-button:hover {
+            color: white;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .card {
+            background-color: #111;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .movie-details {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #333;
+        }
+
+        .movie-poster {
+            width: 80px;
+            height: 120px;
+            border-radius: 0.25rem;
+            object-fit: cover;
+        }
+
+        .movie-info {
+            flex: 1;
+        }
+
+        .movie-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-meta {
+            color: #9CA3AF;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-breakdown {
+            margin-top: 1rem;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: #9CA3AF;
+        }
+
+        .price-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #9CA3AF;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6B7280;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 0.375rem;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #6B7280;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #dc2626;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 0.875rem;
+            background-color: #dc2626;
+            border: none;
+            border-radius: 0.375rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-button:hover {
+            background-color: #b91c1c;
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: #9CA3AF;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        .processing {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 0.25rem solid #333;
+            border-top-color: #dc2626;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .success {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .success-icon {
+            width: 4rem;
+            height: 4rem;
+            background-color: #10B981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .success-icon i {
+            font-size: 2rem;
+        }
+
+        .success h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .success p {
+            color: #9CA3AF;
+            margin-bottom: 1.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <button class="back-button" id="backButton">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 class="title">Payment Details</h1>
+        </header>
+
+        <!-- Order Summary -->
+        <div class="card">
+            <div class="movie-details">
+                <img src="/api/placeholder/80/120" alt="Movie Poster" class="movie-poster">
+                <div class="movie-info">
+                    <h2 class="movie-title">MORTAL ENGINES</h2>
+                    <div class="movie-meta">
+                        <div>IMAX 3D</div>
+                        <div>Dec 14 • 9:40 PM</div>
+                        <div>3 tickets</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="price-breakdown">
+                <div class="price-item">
+                    <span>Tickets (3 × $15.00)</span>
+                    <span>$45.00</span>
+                </div>
+                <div class="price-item">
+                    <span>Booking Fee</span>
+                    <span>$1.50</span>
+                </div>
+                <div class="price-item">
+                    <span>Tax (9%)</span>
+                    <span>$4.05</span>
+                </div>
+                <div class="price-total">
+                    <span>Total Amount</span>
+                    <span>$50.55</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Form -->
+        <div id="paymentForm" class="card">
+            <form id="cardForm">
+                <div class="form-group">
+                    <label for="cardNumber">Card Number</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-credit-card"></i>
+                        <input 
+                            type="text" 
+                            id="cardNumber" 
+                            placeholder="1234 5678 9012 3456" 
+                            maxlength="19"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cardName">Cardholder Name</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-user"></i>
+                        <input 
+                            type="text" 
+                            id="cardName" 
+                            placeholder="John Doe"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="expiry">Expiry Date</label>
+                        <div class="input-wrapper">
+                            <i class="far fa-calendar"></i>
+                            <input 
+                                type="text" 
+                                id="expiry" 
+                                placeholder="MM/YY"
+                                maxlength="5"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input 
+                                type="text" 
+                                id="cvv" 
+                                placeholder="123"
+                                maxlength="4"
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    Pay $50.55
+                </button>
+
+                <div class="secure-badge">
+                    <i class="fas fa-lock"></i>
+                    Secure Payment
+                </div>
+            </form>
+        </div>
+
+        <!-- Processing State -->
+        <div id="processingState" class="card hidden">
+            <div class="processing">
+                <div class="spinner"></div>
+                <div class="text-xl">Processing Payment...</div>
+                <div class="ticket-count">Please do not close this window</div>
+            </div>
+        </div>
+
+        <!-- Success State -->
+        <div id="successState" class="card hidden">
+            <div class="success">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h2>Payment Successful!</h2>
+                <p>Your tickets have been booked</p>
+                <button class="submit-button" onclick="window.location.reload()">
+                    Back to Home
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form elements
+        const cardForm = document.getElementById('cardForm');
+        const cardNumber = document.getElementById('cardNumber');
+        const expiry = document.getElementById('expiry');
+        const cvv = document.getElementById('cvv');
+        
+        // State containers
+        const paymentForm = document.getElementById('paymentForm');
+        const processingState = document.getElementById('processingState');
+        const successState = document.getElementById('successState');
+
+        // Format card number with spaces
+        cardNumber.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s/g, '');
+            if (value.length > 16) {
+                value = value.substr(0, 16);
+            }
+            e.target.value = value.replace(/(\d{4})/g, '$1 ').trim();
+        });
+
+        // Format expiry date
+        expiry.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substr(0, 2) + '/' + value.substr(2);
+            }
+            e.target.value = value;
+        });
+
+        // Allow only numbers in CVV
+        cvv.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Handle form submission
+        cardForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Basic validation
+            const cardNumberValue = cardNumber.value.replace(/\s/g, '');
+            if (cardNumberValue.length !== 16) {
+                showError(cardNumber, 'Card number must be 16 digits');
+                return;
+            }
+
+            const expiryValue = expiry.value;
+            const [month, year] = expiryValue.split('/');
+            if (!month || !year || month > 12 || month < 1) {
+                showError(expiry, 'Invalid expiry date');
+                return;
+            }
+
+            const cvvValue = cvv.value;
+            if (cvvValue.length < 3) {
+                showError(cvv, 'Invalid CVV');
+                return;
+            }
+
+            // Show processing state
+            paymentForm.classList.add('hidden');
+            processingState.classList.remove('hidden');
+
+            // Simulate payment processing
+            setTimeout(() => {
+                processingState.classList.add('hidden');
+                successState.classList.remove('hidden');
+            }, 2000);
+        });
+
+        // Handle back button
+        document.getElementById('backButton').addEventListener('click', () => {
+            if (confirm('Are you sure you want to cancel the payment?')) {
+                window.location.reload();
+            }
+        });
+
+        // Show error message
+        function showError(element, message) {
+            const existingError = element.parentElement.querySelector('.error');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            element.parentElement.appendChild(errorDiv);
+
+            element.style.borderColor = '#dc2626';
+            
+            setTimeout(() => {
+                errorDiv.remove();
+                element.style.borderColor = '#444';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
