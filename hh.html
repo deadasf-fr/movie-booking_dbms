@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #111;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .sign-in-btn {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .movie-info {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .movie-poster {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .movie-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .selected-seats {
+            margin-top: 1rem;
+        }
+
+        .seat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .remove-seat {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .total {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #444;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.25rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background-color: #333;
+            color: white;
+        }
+
+        .next-btn {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .seating-area {
+            flex: 2;
+            min-width: 400px;
+        }
+
+        .screen {
+            width: 100%;
+            height: 5px;
+            background-color: #666;
+            margin-bottom: 2rem;
+            transform: perspective(200px) rotateX(-5deg);
+        }
+
+        .seats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .seat-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .seat {
+            width: 25px;
+            height: 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #666;
+        }
+
+        .seat.selected {
+            background-color: #dc2626;
+        }
+
+        .seat.booked {
+            background-color: #333;
+            cursor: not-allowed;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .movie-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">IMAGIX CINEMA</div>
+        <button class="sign-in-btn">Sign In</button>
+    </header>
+
+    <div class="container">
+        <div class="movie-info">
+            <img src="https://via.placeholder.com/300x450" alt="Mortal Engines" class="movie-poster">
+            <h1 class="movie-title">MORTAL ENGINES</h1>
+            
+            <div class="selected-seats" id="selectedSeats">
+                <!-- Selected seats will be inserted here -->
+            </div>
+
+            <div class="total">
+                <span>Total:</span>
+                <span id="totalPrice">$0</span>
+            </div>
+
+            <div class="action-buttons">
+                <button class="cancel-btn">Cancel</button>
+                <button class="next-btn">Next</button>
+            </div>
+        </div>
+
+        <div class="seating-area">
+            <div class="screen"></div>
+            <div class="seats-container" id="seatsContainer">
+                <!-- Seats will be generated here -->
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box" style="background-color: #666;"></div>
+                    <span>Available</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="background-color: #dc2626;"></div>
+                    <span>Selected</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="background-color: #333;"></div>
+                    <span>Booked</span>
+                </div>
+            </div>
+
+            <div class="movie-details">
+                <span>Date: Dec 14</span>
+                <span>Time: 9:40 pm</span>
+                <span>Type: IMAX 3D</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PRICE_PER_SEAT = 15;
+        let selectedSeats = [];
+
+        function generateSeats() {
+            const seatsContainer = document.getElementById('seatsContainer');
+            const rows = 8;
+            const seatsPerRow = 12;
+
+            for (let i = 0; i < rows; i++) {
+                const row = document.createElement('div');
+                row.className = 'seat-row';
+
+                for (let j = 0; j < seatsPerRow; j++) {
+                    const seat = document.createElement('button');
+                    seat.className = 'seat';
+                    seat.dataset.row = i;
+                    seat.dataset.seat = j;
+                    
+                    // Randomly mark some seats as booked
+                    if (Math.random() < 0.2) {
+                        seat.classList.add('booked');
+                    } else {
+                        seat.addEventListener('click', () => toggleSeat(seat));
+                    }
+
+                    row.appendChild(seat);
+                }
+
+                seatsContainer.appendChild(row);
+            }
+        }
+
+        function toggleSeat(seatElement) {
+            const row = parseInt(seatElement.dataset.row);
+            const seat = parseInt(seatElement.dataset.seat);
+            const seatId = `${row}-${seat}`;
+
+            if (seatElement.classList.contains('selected')) {
+                seatElement.classList.remove('selected');
+                selectedSeats = selectedSeats.filter(id => id !== seatId);
+            } else {
+                seatElement.classList.add('selected');
+                selectedSeats.push(seatId);
+            }
+
+            updateSelectedSeats();
+        }
+
+        function updateSelectedSeats() {
+            const selectedSeatsContainer = document.getElementById('selectedSeats');
+            const totalPriceElement = document.getElementById('totalPrice');
+            
+            selectedSeatsContainer.innerHTML = selectedSeats.map(seatId => {
+                const [row, seat] = seatId.split('-');
+                return `
+                    <div class="seat-item">
+                        <span>Row ${parseInt(row) + 1}, Seat ${parseInt(seat) + 1}</span>
+                        <div>
+                            <span>$${PRICE_PER_SEAT}</span>
+                            <button class="remove-seat" onclick="removeSeat('${seatId}')">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            totalPriceElement.textContent = `$${selectedSeats.length * PRICE_PER_SEAT}`;
+        }
+
+        function removeSeat(seatId) {
+            const [row, seat] = seatId.split('-');
+            const seatElement = document.querySelector(`[data-row="${row}"][data-seat="${seat}"]`);
+            seatElement.classList.remove('selected');
+            selectedSeats = selectedSeats.filter(id => id !== seatId);
+            updateSelectedSeats();
+        }
+
+        // Initialize seats when page loads
+        generateSeats();
+    </script>
+</body>
+</html>

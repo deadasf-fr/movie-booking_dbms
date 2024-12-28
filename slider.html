@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMAGIX CINEMA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <style>
+      /* Ensure no scrollbars appear */
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+      }
+
+      /* Set the background color to black */
+      body {
+        background-color: #000;
+        font-family: 'Anton', sans-serif;
+      }
+
+      /* Center container for slider */
+      .container {
+        width: 100vw; /* Full viewport width */
+        height: 100vh; /* Full viewport height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      /* Slider wrapper */
+      .slider-wrapper {
+        position: relative;
+        width: 95vw;
+        height: 80vh;
+        overflow: hidden;
+        border-radius: 1rem;
+      }
+
+      .slider {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+      }
+
+      .slider img {
+        flex: 0 0 100%;
+        scroll-snap-align: start;
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Navigation dots */
+      .slider-nav {
+        display: flex;
+        column-gap: 1rem;
+        position: absolute;
+        bottom: 1.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1;
+      }
+
+      .slider-nav a {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        background-color: #fff;
+        opacity: 0.75;
+        transition: opacity ease 250ms;
+      }
+
+      .slider-nav a:hover {
+        opacity: 1;
+      }
+
+      /* Navbar styling */
+      .navbar {
+        position: absolute;
+        top: 15px;
+        width: 100%;
+        background-color: transparent;
+        padding: 1rem;
+        display: flex;
+        justify-content: flex-end;
+        z-index: 10;
+        right:50px;
+      }
+
+      .navbar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .navbar ul li {
+        display: inline;
+      }
+
+      .navbar ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.25rem;
+        font-weight: bold;
+      }
+
+      /* Text overlay */
+      .text-overlay {
+        color: #fff;
+        position: absolute;
+        top: 10%;
+        left: 2.5%;
+        transform: translateY(-50%);
+        text-align: left;
+        font-family: 'Anton', sans-serif;
+        z-index: 10;
+      }
+
+      .text-overlay h1 {
+        font-size: 4rem;
+        margin: 0;
+      }
+
+      .text-overlay h2 {
+        font-size: 2rem;
+        margin: 0;
+      }
+      
+      .InBtn {
+        padding: 10px 20px;
+        background-color: black;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 2px;
+        top: -5px;
+      }
+
+      .signInBtn:hover {
+        background-color: white;
+        color:rgb(35, 35, 69);
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+      }
+
+      .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 300px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .close {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 25px;
+        cursor: pointer;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+      }
+
+      form button {
+        padding: 10px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      }sign
+
+      form button:hover {
+        background-color: #218838;
+      }
+      /* Movie listing section */
+      .movie-section {
+        padding: 2rem 5vw;
+        color: #fff;
+        background-color: #000;
+      }
+
+      .movie-section h2 {
+        margin-bottom: 1rem;
+      }
+
+      /* Styling for the film filter buttons */
+/* Styling for the film filter buttons */
+.film-filters {
+  display: flex;
+  justify-content: center; /* Center the buttons */
+  margin-bottom: 2rem; /* Add space between buttons and movie cards */
+}
+
+.film-filters button {
+  color: #fff;
+  background-color: transparent;
+  font-size: 1.25rem;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border: 2px solid #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  margin-right: 1rem; /* Add spacing between buttons */
+}
+
+/* Last button should not have a right margin */
+.film-filters button:last-child {
+  margin-right: 0;
+}
+
+.film-filters button:hover {
+  background-color: #fff;
+  color: #000;
+  border-color: #aaa;
+}
+
+/* Active button styling */
+.film-filters button.active {
+  background-color: #fff;
+  color: #000;
+  border-color: #aaa;
+}
+
+      /* Movie list adjustments */
+/* Movie list adjustments */
+/* Movie list adjustments */
+/* Movie list adjustments */
+.movie-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Ensures spacing between the cards */
+  gap: 1rem; /* Adds consistent space between each card */
+}
+
+/* Movie card to take up 19% width (ensures 5 in a row) */
+.movie-card {
+  flex: 0 0 15%; /* Ensures 5 cards per row */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #222;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+  font-family: Arial, san-serif;
+  font-weight: bold;
+}
+
+.movie-card img {
+  width: 100%; /* Set to fill the width of the card */
+  height: 300px; /* Fixed height for all images */
+  object-fit: cover; /* Ensures images are scaled without distortion */
+  border-radius: 8px;
+}
+
+.movie-card:hover {
+  transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+.movie-card .movie-details {
+  text-align: center;
+  color: #fff;
+  margin-top: 0.75rem;
+}
+
+.movie-card .movie-details h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.movie-card .movie-details p {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  color: #aaa;
+}
+
+/* Adjust for mobile */
+@media (max-width: 768px) {
+  .movie-card {
+    flex: 0 0 45%; /* 2 cards per row on smaller screens */
+  }
+  .movie-card img {
+    height: 200px; /* Reduced image height for smaller screens */
+  }
+}
+
+.movie-link {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Inherit the color from the parent */
+}
+
+.movie-card h3, .movie-card p {
+  color: white; /* Or any color that matches your other cards */
+  font-family: inherit; /* Ensure the font family is the same */
+}
+
+.movie-card {
+  cursor: pointer;
+  text-align: center;
+  background-color: #1c1c1c; /* Adjust to match the background of other cards */
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
+/* Adjust for mobile */
+@media (max-width: 768px) {
+  .movie-card {
+    flex: 0 0 45%; /* 2 cards per row on smaller screens */
+  }
+}
+
+/* Adjust for mobile */
+@media (max-width: 768px) {
+  .movie-card {
+    flex: 0 0 45%; /* 2 cards per row on smaller screens */
+  }
+}
+
+      /* Adjust for mobile */
+      @media (max-width: 768px) {
+        .text-overlay h1 {
+          font-size: 2.5rem;
+        }
+
+        .text-overlay h2 {
+          font-size: 1.5rem;
+        }
+
+        .movie-card {
+          width: 100px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="container">
+      <div class="slider-wrapper">
+        <div class="slider">
+          <img id="slide-1" src="vemon poster.jpeg" alt="Venom Movie Poster" />
+          <img id="slide-2" src="john wick poster.jpg" alt="John Wick Movie Poster" />
+          <img id="slide-3" src="spiderman poster.jpg" alt="Spider-Man Movie Poster" />
+        </div>
+        <div class="slider-nav">
+          <a href="#slide-1"></a>
+          <a href="#slide-2"></a>
+          <a href="#slide-3"></a>
+        </div>
+      </div>
+      <div class="navbar">
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Schedule</a></li>
+          <li><a href="#">Movie</a></li>
+          <li><button class="signInBtn">Sign-In</button></li>
+        </ul>
+      </div>
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Login / Register</h2>
+          <form id="loginForm">
+            <div>
+              <label for="username">Username:</label>
+              <input type="text" id="username" name="username" required>
+            </div>
+            <div>
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" required>
+            </div>
+            <div>
+              <button type="submit" class="btn">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="text-overlay">
+        <h1>Imagix</h1>
+        <h2>Cinema</h2>
+      </div>  
+    </section>
+
+    <!-- Movie Listing Section -->
+    <section class="movie-section">
+      <h2>Opening This Week</h2>
+      <div class="film-filters">
+        <button class="active">All Films</button>
+        <button>2D</button>
+        <button>3D</button>
+        <button>IMAX</button>
+        <button>IMAX 3D</button>
+      </div>
+      <div class="movie-list">
+        <!-- First Row of Movies -->
+        <div class="movie-card">
+          <img src="venom_mcard.jpeg" alt="Venom Movie">
+          <h3>Venom</h3>
+          <p>120 min | Action</p>
+        </div>
+        <a href="final.html" class="movie-link">
+          <div class="movie-card">
+            <img src="dunkirk_mcard.jpeg" alt="Dunkirk Movie">
+            <h3>Dunkirk</h3>
+            <p>118 min | Action, Drama</p>
+          </div>
+        </a>
+        
+        
+        <div class="movie-card" >
+          <img src="svsb_mcard.jpeg" alt="Batman vs Superman">
+          <h3>Batman vs Superman</h3>
+          <p>125 min | Action</p>
+        </div>
+        <div class="movie-card">
+          <img src="jw_mcard.jpeg" alt="John Wick 2">
+          <h3>John Wick 2</h3>
+          <p>116 min | Action, Thriller</p>
+        </div>
+        <div class="movie-card">
+          <img src="aquaman_mcard.com" alt="Aquaman">
+          <h3>Aquaman</h3>
+          <p>120 min | Adventure</p>
+        </div>
+
+        <!-- Second Row of Movies -->
+        <div class="movie-card">
+          <img src="bp_mcard.jpeg" alt="Black Panther">
+          <h3>Black Panther</h3>
+          <p>134 min | Action, Sci-Fi</p>
+        </div>
+        <div class="movie-card">
+          <img src="inception_mcard.jpeg" alt="Inception">
+          <h3>Inception</h3>
+          <p>148 min | Action, Sci-Fi</p>
+        </div>
+        <div class="movie-card">
+          <img src="joker_mcard.jpeg" alt="Joker">
+          <h3>Joker</h3>
+          <p>122 min | Crime, Drama</p>
+        </div>
+        <div class="movie-card">
+          <img src="ae_mcard.jpeg" alt="Avengers Endgame">
+          <h3>Avengers: Endgame</h3>
+          <p>181 min | Action, Sci-Fi</p>
+        </div>
+        <div class="movie-card">
+          <img src="thor_mcard.jpeg" alt="Thor Ragnarok">
+          <h3>Thor: Ragnarok</h3>
+          <p>130 min | Action, Sci-Fi</p>
+        </div>
+      </div>
+    </section>
+    <script>
+      const modal = document.getElementById("modal");
+      const signInBtn = document.querySelector(".signInBtn");
+      const closeBtn = document.querySelector(".close");
+
+      // Open modal when clicking the "Sign-In" button
+      signInBtn.onclick = function() {
+        modal.style.display = "block";
+      };
+
+      // Close modal when clicking the "x" button
+      closeBtn.onclick = function() {
+        modal.style.display = "none";
+      };
+
+      // Close modal if clicking outside of the modal content
+      window.onclick = function(event) {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      // Form submit handler to simulate redirection
+      const loginForm = document.getElementById("loginForm");
+
+      loginForm.onsubmit = function(event) {
+        event.preventDefault(); // Prevent form submission for now
+        alert("Redirecting to the main page...");
+        window.location.href = "slider.html"; // Simulate redirection to the main page
+      };
+    </script>
+  </body>
+</html>

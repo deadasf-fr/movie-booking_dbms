@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #1a73e8;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            background-color: #1557b0;
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #1a73e8;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            width: auto;
+        }
+
+        .toggle-btn:hover {
+            text-decoration: underline;
+            background: none;
+        }
+
+        .error-message {
+            color: #d93025;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-group.error input {
+            border-color: #d93025;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
+        /* Spinner CSS */
+        .spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #1a73e8;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner" id="spinner"></div> <!-- Spinner element -->
+        <h2 class="form-title" id="formTitle">Login</h2>
+        
+        <form id="authForm">
+            <div class="form-group" id="nameGroup" style="display: none;">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name">
+                <div class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email">
+                <div class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password">
+                <div class="error-message"></div>
+            </div>
+
+            <div class="form-group" id="dobGroup" style="display: none;">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob">
+                <div class="error-message"></div>
+            </div>
+
+            <button type="submit" id="submitBtn">Login</button>
+        </form>
+
+        <div class="toggle-form">
+            <span id="toggleText">Don't have an account?</span>
+            <button class="toggle-btn" id="toggleBtn">Register here</button>
+        </div>
+    </div>
+
+    <script>
+        let isLoginMode = true;
+
+        // DOM Elements
+        const formTitle = document.getElementById('formTitle');
+        const authForm = document.getElementById('authForm');
+        const nameGroup = document.getElementById('nameGroup');
+        const dobGroup = document.getElementById('dobGroup');
+        const submitBtn = document.getElementById('submitBtn');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const toggleText = document.getElementById('toggleText');
+        const spinner = document.getElementById('spinner'); // Spinner element
+
+        // Toggle between login and register
+        toggleBtn.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            formTitle.textContent = isLoginMode ? 'Login' : 'Register';
+            submitBtn.textContent = isLoginMode ? 'Login' : 'Register';
+            nameGroup.style.display = isLoginMode ? 'none' : 'block';
+            dobGroup.style.display = isLoginMode ? 'none' : 'block';
+            toggleText.textContent = isLoginMode ? "Don't have an account?" : "Already have an account?";
+            toggleBtn.textContent = isLoginMode ? 'Register here' : 'Login here';
+            clearErrors();
+            authForm.reset();
+        });
+
+        // Form submission
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors();
+            spinner.style.display = 'block'; // Show spinner
+
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+            };
+
+            if (!isLoginMode) {
+                formData.name = document.getElementById('name').value;
+                formData.dob = document.getElementById('dob').value;
+            }
+
+            // Validate form
+            let isValid = validateForm(formData);
+            if (!isValid) {
+                spinner.style.display = 'none'; // Hide spinner on validation failure
+                return;
+            }
+
+            try {
+                const url = isLoginMode 
+                    ? 'http://localhost:3001/api/login'
+                    : 'http://localhost:3001/api/register';
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                spinner.style.display = 'none'; // Hide spinner after response
+
+                if (response.ok) {
+                    alert(data.message);
+                    if (!isLoginMode) {
+                        window.location.href = 'slider.html';
+                    }
+                } else {
+                    showError(data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('An error occurred. Please try again.');
+                spinner.style.display = 'none'; // Hide spinner on error
+            }
+        });
+
+        // Validation
+        function validateForm(formData) {
+            let isValid = true;
+
+            if (!isLoginMode) {
+                if (!formData.name.trim()) {
+                    showFieldError('name', 'Name is required');
+                    isValid = false;
+                }
+
+                if (!formData.dob) {
+                    showFieldError('dob', 'Date of birth is required');
+                    isValid = false;
+                }
+            }
+
+            if (!formData.email.trim()) {
+                showFieldError('email', 'Email is required');
+                isValid = false;
+            } else if (!isValidEmail(formData.email)) {
+                showFieldError('email', 'Please enter a valid email');
+                isValid = false;
+            }
+
+            if (!formData.password) {
+                showFieldError('password', 'Password is required');
+                isValid = false;
+            } else if (formData.password.length < 6) {
+                showFieldError('password', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function showFieldError(fieldId, message) {
+            const group = document.getElementById(fieldId).parentElement;
+            group.classList.add('error');
+            group.querySelector('.error-message').textContent = message;
+        }
+
+        function showError(message) {
+            alert(message);
+        }
+
+        function clearErrors() {
+            const groups = document.querySelectorAll('.form-group');
+            groups.forEach(group => {
+                group.classList.remove('error');
+                group.querySelector('.error-message').textContent = '';
+            });
+        }
+    </script>
+</body>
+</html>

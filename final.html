@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Booking System</title>
+    <style>
+        /* Common styles for both pages */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Georgia, serif;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Styles for schedule page */
+        .schedule-page {
+            padding: 2rem;
+            display: block;
+        }
+
+        .booking-page {
+            padding: 2rem;
+            display: none;
+        }
+
+        .movie-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            border-bottom: 1px solid #333;
+        }
+
+        .movie-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .movie-poster {
+            width: 200px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .movie-info {
+            flex: 1;
+        }
+
+        .movie-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .movie-meta {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .dates {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .date-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .date-item.active {
+            background-color: #dc2626;
+        }
+
+        .showtime-type {
+            margin-bottom: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .time-btn {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+
+        /* Styles for booking page */
+        .booking-header {
+            background-color: #111;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .showing-info {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #666;
+        }
+
+        .seats-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .screen {
+            width: 100%;
+            height: 5px;
+            background-color: #666;
+            margin-bottom: 2rem;
+            transform: perspective(200px) rotateX(-5deg);
+        }
+
+        .seat-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .seat {
+            width: 25px;
+            height: 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #666;
+        }
+
+        .seat.selected {
+            background-color: #dc2626;
+        }
+
+        .seat.booked {
+            background-color: #333;
+            cursor: not-allowed;
+        }
+
+        .booking-summary {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #111;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Schedule Page -->
+    <div class="schedule-page" id="schedulePage">
+        <div class="movie-container">
+            <div class="movie-header">
+                <!-- Replace src with actual movie poster -->
+                <img src="dunkirk_mcard.jpeg" alt="Movie Poster" class="movie-poster">
+                <div class="movie-info">
+                    <div class="movie-title">
+                        <span>DUNKIRK</span>
+                        <span class="imdb-score">IMDB 8.2</span>
+                    </div>
+                    <div class="movie-meta">118 min | ADVENTURE</div>
+                </div>
+            </div>
+
+            <div class="dates" id="dates"></div>
+
+            <div class="showtime-type">
+                <div class="type-label">3D</div>
+                <div class="showtimes">
+                    <button class="time-btn" onclick="showBooking('3D', '11:30 am')">11:30 am</button>
+                    <button class="time-btn" onclick="showBooking('3D', '5:00 pm')">5:00 pm</button>
+                    <button class="time-btn" onclick="showBooking('3D', '7:45 pm')">7:45 pm</button>
+                    <button class="time-btn" onclick="showBooking('3D', '9:45 pm')">9:45 pm</button>
+                </div>
+            </div>
+
+            <div class="showtime-type">
+                <div class="type-label">IMAX 3D</div>
+                <div class="showtimes">
+                    <button class="time-btn" onclick="showBooking('IMAX 3D', '11:30 am')">11:30 am</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Page -->
+    <div class="booking-page" id="bookingPage">
+        <div class="booking-header">
+            <button class="back-btn" onclick="showSchedule()">← Back to Schedule</button>
+        </div>
+
+        <div class="showing-info" id="showingInfo">
+            <!-- Showing details will be inserted here -->
+        </div>
+
+        <div class="seats-container">
+            <div class="screen"></div>
+            <div id="seatsGrid"></div>
+        </div>
+
+        <div class="booking-summary">
+            <div id="selectedSeatsInfo">Selected: 0 seats</div>
+            <div id="totalPrice">Total: $0</div>
+            <button class="time-btn" onclick="confirmBooking()">Confirm Booking</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedSeats = [];
+        let currentShowing = null;
+
+        // Generate dates
+        function generateDates() {
+            const dates = document.getElementById('dates');
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const today = new Date();
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'date-item' + (i === 2 ? ' active' : '');
+                
+                dateDiv.innerHTML = `
+                    <div class="date-day">${date.getDate()}</div>
+                    <div class="date-week">${days[date.getDay()]}</div>
+                    <div class="date-month">Oct</div>
+                `;
+
+                dateDiv.addEventListener('click', () => {
+                    document.querySelectorAll('.date-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    dateDiv.classList.add('active');
+                });
+
+                dates.appendChild(dateDiv);
+            }
+        }
+
+        // Generate seats grid
+        function generateSeats() {
+            const seatsGrid = document.getElementById('seatsGrid');
+            const rows = 8;
+            const seatsPerRow = 12;
+
+            for (let i = 0; i < rows; i++) {
+                const row = document.createElement('div');
+                row.className = 'seat-row';
+
+                for (let j = 0; j < seatsPerRow; j++) {
+                    const seat = document.createElement('button');
+                    seat.className = 'seat';
+                    if (Math.random() < 0.2) {
+                        seat.classList.add('booked');
+                    } else {
+                        seat.addEventListener('click', () => toggleSeat(seat, i, j));
+                    }
+                    row.appendChild(seat);
+                }
+
+                seatsGrid.appendChild(row);
+            }
+        }
+
+        // Toggle seat selection
+        function toggleSeat(seat, row, seatNum) {
+            if (seat.classList.contains('selected')) {
+                seat.classList.remove('selected');
+                selectedSeats = selectedSeats.filter(s => s.row !== row || s.seat !== seatNum);
+            } else {
+                seat.classList.add('selected');
+                selectedSeats.push({ row, seat: seatNum });
+            }
+            updateBookingSummary();
+        }
+
+        // Update booking summary
+        function updateBookingSummary() {
+            const selectedSeatsInfo = document.getElementById('selectedSeatsInfo');
+            const totalPrice = document.getElementById('totalPrice');
+            
+            selectedSeatsInfo.textContent = `Selected: ${selectedSeats.length} seats`;
+            totalPrice.textContent = `Total: $${selectedSeats.length * 15}`;
+        }
+
+        // Switch to booking page
+        function showBooking(type, time) {
+            const activeDate = document.querySelector('.date-item.active');
+            const date = activeDate.querySelector('.date-day').textContent;
+            const month = activeDate.querySelector('.date-month').textContent;
+
+            currentShowing = {
+                movie: 'Dunkirk',
+                type: type,
+                time: time,
+                date: `${date} ${month}`
+            };
+
+            document.getElementById('schedulePage').style.display = 'none';
+            document.getElementById('bookingPage').style.display = 'block';
+            
+            document.getElementById('showingInfo').innerHTML = `
+                <h2>${currentShowing.movie}</h2>
+                <p>${currentShowing.date} | ${currentShowing.time} | ${currentShowing.type}</p>
+            `;
+
+            // Reset seats
+            selectedSeats = [];
+            document.getElementById('seatsGrid').innerHTML = '';
+            generateSeats();
+            updateBookingSummary();
+        }
+
+        // Switch back to schedule page
+        function showSchedule() {
+            document.getElementById('schedulePage').style.display = 'block';
+            document.getElementById('bookingPage').style.display = 'none';
+        }
+
+        // Handle booking confirmation
+        function confirmBooking() {
+            if (selectedSeats.length === 0) {
+                alert('Please select at least one seat');
+                return;
+            }
+            window.location.href = "pay.html"; 
+        }
+
+        // Initialize the page
+        generateDates();
+    </script>
+</body>
+</html>
